@@ -1,0 +1,38 @@
+version: '2'
+
+services:
+  database_master:
+    image: mysql
+    ports:
+      - "3306:3306"
+    env_file:
+      - master.env
+
+  authoritative_master:
+    build: .
+    links:
+      - database_master
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "80:80"
+    env_file:
+      - master.env
+
+  database_slave:
+    image: mysql
+    ports:
+      - "3307:3306"
+    env_file:
+      - slave.env
+
+  authoritative_slave:
+    build: .
+    links:
+      - database_slave
+    ports:
+      - "54:53/tcp"
+      - "54:53/udp"
+      - "81:80"
+    env_file:
+      - slave.env
